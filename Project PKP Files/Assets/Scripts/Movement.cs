@@ -51,7 +51,7 @@ public class Movement : MonoBehaviour
             Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             
 
-            this.transform.position += moveDirection * 0.03f;
+            this.transform.position += moveDirection * 0.03f; 
 
             this.anim.SetFloat("vertical", verticalMove);
             this.anim.SetFloat("horizontal", horizontalMove);
