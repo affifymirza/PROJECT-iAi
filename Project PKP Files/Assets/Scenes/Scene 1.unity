@@ -209,14 +209,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 126122939}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a1d61985d4dff74e91f5fee36aaf352, type: 3}
+  m_Script: {fileID: 11500000, guid: ae588ebadff064a41bdb424f37c3616a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
   range: 100
   fireRate: 15
   fpsCam: {fileID: 1922614556}
-  muzzle: {fileID: 0}
+  muzzle: {fileID: 3046587130310159413, guid: 6601d22fd795fea47a097b5cc4528112, type: 3}
   impactEffect: {fileID: 3046587130291058007, guid: 6601d22fd795fea47a097b5cc4528112, type: 3}
   impactForce: 30
   animRecoil: {fileID: 1404609899}
