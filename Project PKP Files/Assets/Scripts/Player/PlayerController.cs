@@ -2,35 +2,56 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using UnityEngine.UI;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 {
-
+    [SerializeField] Image healthBarImage;
+    [SerializeField] GameObject ui;
     [SerializeField] GameObject cameraHolder;
+    [SerializeField] GameObject camera;
     [SerializeField] float mouseSensitivity, sprintSpeed, walkSpeed, jumpForce, smoothTime;
+
+    [SerializeField] Item[] items;
+    int itemIndex;
+    int prevItemIndex = -1;
 
     float verticalLookRotation;
     bool grounded;
     Vector3 smoothMoveVelocity;
     Vector3 moveAmount;
 
-    [SerializeField] Rigidbody rb;
+    Rigidbody rb;
 
-    [SerializeField] PhotonView PV;
+    PhotonView PV;
+
+    PlayerManager playerManager;
+
+    const float maxHealth = 100f;
+    float currentHealth = maxHealth;
 
 
-    //private void Awake()
-    //{
-    //    rb = GetComponent<Rigidbody>();
-    //    PV = GetComponent<PhotonView>();
-    //}
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        PV = GetComponent<PhotonView>();
+
+        playerManager = PhotonView.Find((int)PV.InstantiationData[0]).GetComponent<PlayerManager>();
+    }
 
     private void Start()
     {
-        if(!PV.IsMine)
+        if(PV.IsMine)
         {
-            Destroy(cameraHolder);
+            EquipItem(0);
+        }
+        else
+        {
+            Destroy(camera);
             Destroy(rb);
+            Destroy(ui);
         }
     }
 
@@ -42,6 +63,25 @@ public class PlayerController : MonoBehaviour
         Look();
         Move();
         Jump();
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (Input.GetKeyDown((i + 1).ToString()))
+            {
+                EquipItem(i);
+                break;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            items[itemIndex].Use();
+        }
+
+        if(transform.position.y <= -10f)
+        {
+            Die();
+        }
     }
 
     void Look()
@@ -69,6 +109,38 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void EquipItem(int _index)
+    {
+        if (_index == prevItemIndex)
+            return;
+
+        itemIndex = _index;
+
+        items[itemIndex].itemGamebject.SetActive(true);
+
+        if(prevItemIndex != -1)
+        {
+            items[prevItemIndex].itemGamebject.SetActive(false);
+        }
+
+        prevItemIndex = itemIndex;
+
+        if (PV.IsMine)
+        {
+            Hashtable hash = new Hashtable();
+            hash.Add("itemIndex", itemIndex);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+        }
+    }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        if(!PV.IsMine && targetPlayer == PV.Owner)
+        {
+            EquipItem((int)changedProps["itemIndex"]);
+        }
+    }
+
     public void SetGroundedState(bool _grounded)
     {
         grounded = _grounded;
@@ -82,4 +154,31 @@ public class PlayerController : MonoBehaviour
         rb.MovePosition(rb.position + transform.TransformDirection(moveAmount) * Time.fixedDeltaTime);
     }
 
+    public void TakeDamage(float _damage)
+    {
+        //Debug.Log("Took damage:  " + _damage);
+        PV.RPC("RPC_TakeDamage", RpcTarget.All, _damage);
+    }
+
+    [PunRPC]
+    void RPC_TakeDamage(float _damage)
+    {
+        if (!PV.IsMine)
+            return;
+
+        //Debug.Log("Took damage:  " + _damage);
+
+        currentHealth -= _damage;
+        healthBarImage.fillAmount = currentHealth / maxHealth;
+
+        if(currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        playerManager.Die();
+    }
 }
