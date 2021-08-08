@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Project PKP Files/Assets/Scripts/Game Engine/UsernameDisplay.cs.meta
 guid: 60ca3b98318b46444a8383497db08366
+=======
+guid: 075e290accfd8e843bf7f0b4a55f9076
+>>>>>>> main:Project PKP Files/Assets/Scripts/switchCam1.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
