@@ -5,28 +5,26 @@ using UnityEngine.InputSystem;
 public class yBotMovement : MonoBehaviour
 {
     [SerializeField]
-    private float playerSpeed = 2.0f;
-
+    private float playerSpeed = 3.0f;
     [SerializeField]
     private float jumpHeight = 1.0f;
-
     [SerializeField]
     private float gravityValue = -9.81f;
-
     [SerializeField]
     private float rotationspeed = 5f;
 
     [SerializeField]
     private float animationSmoothTime = 0.1f;
-
     [SerializeField]
     private float animationPlayTransition = 0.15f;
 
-    [SerializeField]
-    private Transform aimTarget;
+    //[SerializeField]
+    //private Transform aimTarget;
 
-    [SerializeField]
-    private float aimDistance = 10f;
+    //[SerializeField]
+    //private float aimDistance = 10f;
+
+    //---------------------------------------------------------------------------------------------------------------------//
 
     //[SerializeField]
     //private GameObject bulletPrefab;
@@ -50,9 +48,11 @@ public class yBotMovement : MonoBehaviour
     private InputAction JumpAction;
     //private InputAction ShootAction;
 
+    //Animation
     private Animator anim;
     int JumpAnimation;
-    
+    int StopAnimation;
+    int SprintAnimation;
     int moveXAnimationID;
     int moveZAnimationID;
 
@@ -72,26 +72,38 @@ public class yBotMovement : MonoBehaviour
 
         anim = GetComponent<Animator>();
         JumpAnimation = Animator.StringToHash("Jump");
-        
+        SprintAnimation = Animator.StringToHash("Sprint");
+        StopAnimation = Animator.StringToHash("Stop");
+
         moveXAnimationID = Animator.StringToHash("MoveX");
         moveZAnimationID = Animator.StringToHash("MoveZ");
 
-        
     }
 
     private void LateUpdate()
     {
-        aimTarget.position = cameraTransform.position + cameraTransform.forward * aimDistance;
+        //aimTarget.position = cameraTransform.position + cameraTransform.forward * aimDistance;
     }
 
     void Update()
     {
-       
+        //if (Input.GetKeyDown(KeyCode.LeftShift))
+        //{
+        //    //anim.CrossFade(SprintAnimation, animationPlayTransition);
+        //  //  anim.Play(SprintAnimation);
+
+        //    playerSpeed = 9f;
+        //}
+        //else if (Input.GetKeyUp(KeyCode.LeftShift))
+        //{
+        //   // anim.Play(StopAnimation);
+        //    playerSpeed = 2.0f;
+        //}
 
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
-            playerVelocity.y = 0f;
+            playerVelocity.y = 0f; 
         }
 
         Vector2 input = moveAction.ReadValue<Vector2>();
@@ -103,14 +115,16 @@ public class yBotMovement : MonoBehaviour
 
         controller.Move(move * Time.deltaTime * playerSpeed);
 
+
         anim.SetFloat(moveXAnimationID, currentAnimationBlendVector.x);
         anim.SetFloat(moveZAnimationID, currentAnimationBlendVector.y);
+
 
         // Changes the height position of the player..
         if (JumpAction.triggered && groundedPlayer)
         {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
-            anim.CrossFade(JumpAnimation, animationPlayTransition);
+            anim.CrossFade(JumpAnimation, animationPlayTransition); 
         }
 
         playerVelocity.y += gravityValue * Time.deltaTime;
