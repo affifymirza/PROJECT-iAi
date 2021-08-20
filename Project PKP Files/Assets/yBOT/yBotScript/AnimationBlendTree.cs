@@ -12,6 +12,13 @@ public class AnimationBlendTree : MonoBehaviour
     public float maximumWalkVelocity = 0.5f;
     public float maximumRunVelocity = 2.0f;
 
+    //public CharacterController controller;
+    //public float speed = 6f;
+    //public float turnSmoothTime = 0.1f;
+    //float turnSmoothVelocity;
+    //private Transform cameraTransform;
+    //public float rotationspeed = 5f;
+
     //increase performance
     int VelocityZHash;
     int VelocityXHash;
@@ -21,16 +28,45 @@ public class AnimationBlendTree : MonoBehaviour
         animator = GetComponent<Animator>();
 
         //increase performance
-        VelocityZHash = Animator.StringToHash("VelocityZ");
+        VelocityZHash = Animator.StringToHash("VelocityZ");  
         VelocityXHash = Animator.StringToHash("VelocityX");
+        //cameraTransform = Camera.main.transform;
     }
 
     void Update()
     {
+        //float horizontal = Input.GetAxisRaw("Horizontal");
+        //float vertical = Input.GetAxisRaw("Vertical");
+        //Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+
+        //if(direction.magnitude >= 0.1f)
+        //{
+        //    //float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg * cam.eulerAngles.y;
+        //    //float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+        //    //transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+        //    //Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+        //    controller.Move(direction * speed * Time.deltaTime);
+        //}
+        //direction = direction.x * cameraTransform.right.normalized + direction.z * cameraTransform.forward.normalized;
+
+        //Quaternion targetrotation = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f);
+        //transform.rotation = Quaternion.Lerp(transform.rotation, targetrotation, rotationspeed * Time.deltaTime);
+
         bool fowardPressed = Input.GetKey(KeyCode.W);
         bool leftPressed = Input.GetKey(KeyCode.A);
         bool rightPressed = Input.GetKey(KeyCode.D);
         bool runPressed = Input.GetKey(KeyCode.LeftShift);
+
+        ////Untuk lari
+        //if (Input.GetKey(KeyCode.LeftShift))
+        //{
+        //    speed = 12f;
+        //}
+        //else
+        //{
+        //    speed = 6f;
+        //}
 
         //set current Velocity
         float currentMaxVelocity = runPressed ? maximumRunVelocity : maximumWalkVelocity;
