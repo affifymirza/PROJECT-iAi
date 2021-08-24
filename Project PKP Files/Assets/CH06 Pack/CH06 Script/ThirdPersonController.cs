@@ -1,15 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Photon.Realtime;
 
 public class ThirdPersonController : MonoBehaviour
 {
-    public Camera myCamera;  
+    public Camera myCamera;
+    public GameObject cameraObj;
+    public GameObject cmCamera;
     public float speed = 2f;
     public float Sprintspeed = 6f;
     public float RotationSpeed = 15f;
     public float JumpSpeed = 7f;
     public float AnimationBlendSpeed = 2f;
+
+    [SerializeField] PhotonView PV;
 
     Animator MyAnimator;
     CharacterController myController;
@@ -22,16 +29,37 @@ public class ThirdPersonController : MonoBehaviour
     bool mJumping = false;
     bool mSprintint = false;
 
+    PlayerManager playerManager;
+
     // Start is called before the first frame update
     void Start()
     {
         myController = GetComponent<CharacterController>();
         MyAnimator = GetComponent<Animator>();
+
+        Cursor.visible = false;
+
+        if (PV.IsMine)
+        {
+
+        }
+        else
+        {
+            Destroy(cmCamera);
+            Destroy(cameraObj);
+            Destroy(myController);
+        }
+
+        playerManager = PhotonView.Find((int)PV.InstantiationData[0]).GetComponent<PlayerManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        if (!PV.IsMine)
+            return;
+
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
